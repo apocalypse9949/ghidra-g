@@ -23,11 +23,9 @@ Linux/support/bsim||GHIDRA||||END|
 Linux/support/bsim_ctl||GHIDRA||||END|
 Linux/support/buildGhidraJar||GHIDRA||||END|
 Linux/support/convertStorage||GHIDRA||||END|
-Linux/support/gdbGADPServerRun||GHIDRA||||END|
 Linux/support/ghidraClean||GHIDRA||||END|
 Linux/support/ghidraDebug||GHIDRA||||END|
 Linux/support/jshellRun||GHIDRA||||END|
-Linux/support/jythonRun||GHIDRA||||END|
 Linux/support/pyghidraRun||GHIDRA||||END|
 Linux/support/sleigh||GHIDRA||||END|
 Windows/support/README_createPdbXmlFiles.txt||GHIDRA||||END|
