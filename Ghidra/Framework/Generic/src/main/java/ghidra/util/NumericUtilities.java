@@ -474,7 +474,7 @@ public final class NumericUtilities {
 	 * @return the string representation
 	 *
 	 * @see #convertMaskToHexString(long, int, boolean, int, String)
-	 * @see #convertHexStringToMaskedValue(AtomicLong, AtomicLong, String, int, int, String)
+	 * @see #parseHexStringToMaskedByte(String, int, int)
 	 */
 	public static String convertMaskedValueToHexString(long msk, long val, int n, boolean truncate,
 			int spaceevery, String spacer) {
@@ -543,7 +543,7 @@ public final class NumericUtilities {
 	 * @return the string representation
 	 *
 	 * @see #convertMaskedValueToHexString(long, long, int, boolean, int, String)
-	 * @see #convertHexStringToMaskedValue(AtomicLong, AtomicLong, String, int, int, String)
+	 * @see #parseHexStringToMaskedByte(String, int, int)
 	 */
 	public static String convertMaskToHexString(long msk, int n, boolean truncate, int spaceevery,
 			String spacer) {
@@ -602,23 +602,15 @@ public final class NumericUtilities {
 	 * @see #convertMaskedValueToHexString(long, long, int, boolean, int, String)
 	 * @see #convertMaskToHexString(long, int, boolean, int, String)
 	 */
-	public static void convertHexStringToMaskedValue(AtomicLong msk, AtomicLong val, String hex,
-			int n, int spaceevery, String spacer) {
-		long lmsk = 0;
-		long lval = 0;
-		int pos = 0;
+	public static int parseHexStringToMaskedByte(String hex, int start, int end) {
+		int lmsk = 0;
+		int lval = 0;
+		int pos = start;
 		int i = 0;
-		while (pos < hex.length() && i < n) {
+		int n = 2;
+		while (pos < end && i < n) {
 			lmsk <<= 4;
 			lval <<= 4;
-			if (i != 0 && spaceevery != 0 && i % spaceevery == 0) {
-				boolean matchspacer = hex.regionMatches(pos, spacer, 0, spacer.length());
-				if (!matchspacer) {
-					throw new NumberFormatException("Missing spacer at " + pos);
-				}
-				pos += spacer.length();
-				continue;
-			}
 			char c = hex.charAt(pos);
 			if (Character.isLetterOrDigit(c)) { // a hex digit, defined or not
 				if (c == 'X') { // undefined
@@ -628,8 +620,20 @@ public final class NumericUtilities {
 					continue;
 				}
 				// Try defined
-				long nibble = Long.parseLong(hex.substring(pos, pos + 1), 16);
-				lmsk |= 0x0fL;
+				int nibble;
+				if (c >= '0' && c <= '9') {
+					nibble = c - '0';
+				}
+				else if (c >= 'A' && c <= 'F') {
+					nibble = c - 'A' + 10;
+				}
+				else if (c >= 'a' && c <= 'f') {
+					nibble = c - 'a' + 10;
+				}
+				else {
+					throw new NumberFormatException("Illegal hex character '" + c + "' at " + pos);
+				}
+				lmsk |= 0x0f;
 				lval |= nibble;
 				i++;
 				pos++;
@@ -642,7 +646,7 @@ public final class NumericUtilities {
 					pos++;
 					lmsk <<= 1;
 					lval <<= 1;
-					if (pos > hex.length()) {
+					if (pos >= end) {
 						throw new NumberFormatException("Missing one or more bits at " + pos);
 					}
 					c = hex.charAt(pos);
@@ -660,7 +664,7 @@ public final class NumericUtilities {
 					throw new NumberFormatException("Illegal character '" + c + "' at " + pos);
 				}
 				pos++;
-				if (pos > hex.length() || hex.charAt(pos) != ']') {
+				if (pos >= end || hex.charAt(pos) != ']') {
 					throw new NumberFormatException("Missing closing bracket after bits at " + pos);
 				}
 				pos++;
@@ -669,14 +673,13 @@ public final class NumericUtilities {
 			}
 			throw new NumberFormatException("Illegal character '" + c + "' at " + pos);
 		}
-		if (pos < hex.length()) {
+		if (pos < end) {
 			throw new NumberFormatException("Gratuitous characters starting at " + pos);
 		}
 		if (i < n) {
 			throw new NumberFormatException("Too few characters for " + n + " nibbles. Got " + i);
 		}
-		msk.set(lmsk);
-		val.set(lval);
+		return (lmsk << 8) | lval;
 	}
 
 	/**
