@@ -426,9 +426,7 @@ public abstract class AbstractAssemblyResolutionFactory< //
 	 * This was used primarily in testing, to specify expected results.
 	 * 
 	 * @param str the string representation: "{@code ins:[pattern],ctx:[pattern]}"
-	 * @see ghidra.util.NumericUtilities#convertHexStringToMaskedValue(AtomicLong, AtomicLong,
-	 *      String, int, int, String) NumericUtilities.convertHexStringToMaskedValue(AtomicLong,
-	 *      AtomicLong, String, int, int, String)
+	 * @see ghidra.util.NumericUtilities#convertHexStringToMaskedValue(long[], String, int, int, int, int, String)
 	 * @param description a description of the resolution
 	 * @param children any children involved in the resolution
 	 * @return the decoded resolution
